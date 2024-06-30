@@ -47,35 +47,52 @@ showAllStudent();
 function createStudent(event) {
   event.preventDefault();
 
-  const firstName = $("#firstName");
-  const lastName = $("#lastName");
-  const image = $("#imagUrl");
-  const phone = $("#phoneNumber");
-  const birthday = $("#birthday");
-  const gender = $("#gender");
-  const address = $("#address");
-  const mark = $("#mark");
-  const classId = $("#classId");
-  let studentForm = new FormData();
+  let firstName = document.getElementById("firstName").value;
+  let lastName = document.getElementById("lastName").value;
+  let image = document.getElementById("imagUrl").files[0];
+  let phone = document.getElementById("phoneNumber").value;
+  let birthday = document.getElementById("birthday").value;
+  let gender = document.getElementById("gender").value;
+  let address = document.getElementById("address").value;
+  let mark = document.getElementById("mark").value;
+  let classId = document.getElementById("classId").value;
 
-  studentForm.append("firstname", firstName.value);
-  studentForm.append("lastName", lastName.value);
-  studentForm.append("imagUrl", image[0].files[0]);
-  studentForm.append("phoneNumber", phone.value);
-  studentForm.append("birthday", birthday.value);
-  studentForm.append("gender", gender.value);
-  studentForm.append("address", address.value);
-  studentForm.append("mark", mark.value);
-  studentForm.append("classId", classId.value);
-  // console.log(studentForm.get());
+  //   let studentForm = new FormData();
 
+  //   studentForm.append("firstname", firstName);
+  //   studentForm.append("lastName", lastName);
+  //   studentForm.append("imagUrl", image);
+  //   studentForm.append("phoneNumber", phone);
+  //   studentForm.append("birthday", birthday);
+  //   studentForm.append("gender", gender);
+  //   studentForm.append("address", address);
+  //   studentForm.append("mark", mark);
+  //   studentForm.append("classId", classId);
+  //   console.log(JSON.stringify(studentForm));
+  let studentForm = {
+    firstName: firstName,
+    lastName: lastName,
+    imagUrl: image,
+    phoneNumber: phone,
+    birthday: birthday,
+    gender: gender,
+    address: address,
+    mark: mark,
+    classId: classId,
+  };
+  console.log(studentForm);
   $.ajax({
-    headers: { contentType: "multipart/form-data" },
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
     type: "POST",
     url: "http://localhost:8080/api/students",
-    data: studentForm,
-    processData: false,
-    success: console.log("success"),
+    data: JSON.stringify(studentForm),
+    success: function () {
+      console.log("success");
+      showAllStudent();
+    },
   });
 }
 
@@ -109,11 +126,11 @@ function editForm(id) {
       document.getElementById("editForm").innerHTML = `
       <div>
         <label for="">First Name</label>
-        <input type="text" id="firstName" value=${dl.firstName}>
+        <input type="text" id="firstName" value='${dl.firstName}'>
       </div>
       <div>
         <label for="">Last Name</label>
-        <input type="text" id="lastName" value=${dl.lastName}>
+        <input type="text" id="lastName" value='${dl.lastName}'>
       </div>
       <div>
         <label for="">Image</label>
@@ -122,22 +139,22 @@ function editForm(id) {
       </div>
       <div>
         <label for="">Phone Number</label>
-        <input type="text" id="phoneNumber" value=${dl.phoneNumber}>
+        <input type="text" id="phoneNumber" value='${dl.phoneNumber}'>
       </div>
       <div>
         <label for="">birthday</label>
-        <input type="text" id="birthday" value=${dl.birthday}>
+        <input type="text" id="birthday" value='${dl.birthday}'>
       </div>
       <div>
         <label for="">Gender</label>
-        <input type="radio" id="gender" name="gender" value="true" checked = ${
-          dl.gender == true ? "checked" : ""
+        <input type="radio" id="gender" name="gender" value="true" ${
+          dl.gender ? "checked" : ""
         }/><label
           for=""
           >Nam</label
         >
-        <input type="radio" id="gender" name="gender" value="false" checked = ${
-          dl.gender == false ? "checked" : ""
+        <input type="radio" id="gender" name="gender" value="false" ${
+          !dl.gender ? "checked" : ""
         }/><label
           for=""
           >Nữ</label
@@ -145,22 +162,21 @@ function editForm(id) {
       </div>
       <div>
         <label for="">Address</label>
-        <input type="text" id="address" value=${dl.address}>
+        <input type="text" id="address" value='${dl.address}'>
       </div>
       <div>
         <label for="">Mark</label>
-        <input type="text" id="mark" value=${dl.mark}>
+        <input type="text" id="mark" value='${dl.mark}'>
       </div>
       <div>
         <label for="">Class</label>
-        <input type="number" id="classId" value=${dl.classes.className}>
+        <input type="text" id="classId" value='${dl.classes.className}'>
       </div>
       <button  onclick="updateStudent(${dl.studentId})">Update</button>
       <br>
       <br>
       <br>
             `;
-      updateStudent(dl.studenntId);
     },
   });
 }
@@ -175,7 +191,7 @@ function updateStudent(id) {
   let address = document.getElementById("address").value;
   let mark = document.getElementById("mark").value;
   let classId = document.getElementById("classId").value;
-  console.log(image);
+
   let studentForm = {
     firstName: firstName,
     lastName: lastName,
@@ -193,8 +209,10 @@ function updateStudent(id) {
     url: `http://localhost:8080/api/students/${id}`,
     headers: { accept: "application/json", "content-type": "application/json" },
     type: "PUT",
-    data: studentForm,
+    data: JSON.stringify(studentForm),
     dataType: "json",
-    success: showAllStudent(),
+    success: function () {
+      showAllStudent();
+    },
   });
 }
